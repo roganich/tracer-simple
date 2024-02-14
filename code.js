@@ -1,15 +1,11 @@
 /* global Promise, fetch, window, cytoscape, document, tippy, _ */
 
-// Promise.all([
-//   fetch('https://github.com/cytoscape/cytoscape.js/blob/master/documentation/demos/colajs-graph/cy-style.json')
-//     .then(function(res) {
-//       return res.json();
-//     }),
-//   fetch('https://github.com/cytoscape/cytoscape.js/blob/master/documentation/demos/colajs-graph/data.json')
-//     .then(function(res) {
-//       return res.json();
-//     })
-// ])
+fetch('data.json')
+  .then(response => response.json())
+  .then(data => {
+    // Use the data here
+    console.log(data);
+  });
 
 Promise.all([
   loadDataFromFile('cy-style.json'),
