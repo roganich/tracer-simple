@@ -1,6 +1,6 @@
 /* global Promise, fetch, window, cytoscape, document, tippy, _ */
 
-fetch('data.json')
+fetch('./data.json')
   .then(response => response.json())
   .then(data => {
     // Use the data here
@@ -8,8 +8,8 @@ fetch('data.json')
   });
 
 Promise.all([
-  loadDataFromFile('cy-style.json'),
-  loadDataFromFile('data.json')
+  loadDataFromFile('./cy-style.json'),
+  loadDataFromFile('./organization.json')
 ])
   .then(function(dataArray) {
     var h = function(tag, attrs, children){
@@ -216,12 +216,12 @@ Promise.all([
       });
 
       var tippy = makeTippy(n, h('div', {}, $links));
-
+      var descriptionContent = "";
       n.data('tippy', tippy);
 
       n.on('click', function(e){
         tippy.show();
-
+        descriptionContent = n.data('description');
         cy.nodes().not(n).forEach(hideTippy);
       });
     });

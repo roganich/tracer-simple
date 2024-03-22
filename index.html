@@ -43,36 +43,80 @@
           </div>
 
           <div class="tooltip u-pull-left">
+            <select id="graphOptions" >
+                <option value="">Select tags</option>
+                <script>
+                    var tags = ["field", "stem", "inf_dis", "vul_env_risk", "mon_eva_wat_res", "mon_foll_exp_res", "mon_foll_eco_forest", "mon_foll_eco", "mon_foll_soil", "foll_char_clima", "und_ana_ref"];
+                    var labels = ["Graph from Campo", "Graph from Formación en ciencia/análisis/ingeniería de datos", "Graph from BD-Enfermedades transmisibles", "Graph from BD-Amenazas vulnerabilidad riesgos ambientales", "Graph from BD-Monitoreo Evaluación y modelamiento del recurso hídrico", "Graph from BD-Monitoreo y seguimiento al uso y aprovechamiento de los recursos", "Graph from BD-Monitoreo y seguimiento del ecosistema de bosque", "Graph from BD-Monitoreo y seguimiento de los ecosistemas", "Graph from BD-Monitoreo y seguimiento de suelos y tierras", "Graph from BD-Seguimiento y caracterización del clima", "Graph from BD-Unidades de análisis y referencia"]
+                    for (var i = 0; i < tags.length; i++) {
+                        document.write('<option value="' + tags[i] + '">' + labels[i] + '</option>');
+                    }
+                </script>
+                
+            </select>
+            <!-- <span class="tooltiptext">Select an option to color by</span> -->
+          </div>
+
+          <div class="tooltip u-pull-left">
+            <select id="layoutOptions" onchange="setLayoutBy(this.value)">
+                <option value="">Select layout</option>
+                <script>
+                    var tags = ["random", "grid", "circle", "concentric", "breadthfirst", "cose"];
+                    var labels = ["Random layout", "Grid layout", "Circle layout", "Concentric layout", "Breadthfirst layout", "Cose layout"]
+                    for (var i = 0; i < tags.length; i++) {
+                        document.write('<option value="' + tags[i] + '">' + labels[i] + '</option>');
+                    }
+                </script>
+                
+            </select>
+            <!-- <span class="tooltiptext">Select an option to color by</span> -->
+          </div>
+
+          <div class="tooltip u-pull-left">
             <select id="colorOptions" onchange="setColorBy(this.value)">
               <option value="">Select color option</option>
-              <option value="entity_type">Color by Entity Type</option>
-              <option value="sector_type">Color by Sector Type</option>
-              <option value="org_type">Color by Organization Type</option>
-              <option value="scale">Color by Scale</option>
-              <option value="rel_health_sys">Color by Relationship with health system</option>
-              <option value="gen_user_type">Color by User Type (general)</option>
-              <option value="act_user_type">Color by User Type (active)</option>
-              <option value="rel_sivigila">Color by Relationaship with SIVIGILA</option>
-              <option value="rel_etvs">Color by Relationship with ETVs</option>
+              <script>
+                var colorOptions = ["entity_type", "sector_type", "org_type", "scale", "rel_health_sys", "gen_user_type", "act_user_type", "rel_sivigila", "rel_etvs"];
+                var labels = ["Color by Entity Type", "Color by Sector Type", "Color by Organization Type", "Color by Scale", "Color by Relationship with health system", "Color by User Type (general)", "Color by User Type (active)", "Color by Relationaship with SIVIGILA", "Color by Relationship with ETVs"];
+                for (var i = 0; i < colorOptions.length; i++) {
+                    document.write('<option value="' + colorOptions[i] + '">' + labels[i] + '</option>');
+                }  
+              </script>
             </select>
             <!-- <span class="tooltiptext">Select an option to color by</span> -->
           </div>
 
           <div id="legend">
-            <!-- <h4>Color Legend</h4>
-            <div style="color: red;">Entidad gubernamental</div>
-            <div style="color: blue;">Entidad gubernamental de salud</div>
-            <div style="color: green;">Entidad internacional que lidera agendas en el sector</div>
-            <div style="color: magenta;">Entidad no gubernamental</div>
-            <div style="color: orange;">Entidad no gubernamental de salud</div> -->
-            <!-- Add more entries for other values or properties -->
+    
           </div>
 
+          <div id="description">
+            <h4>Node Description</h4>
+            <p>Select a node to see it's description</p>
+          </div>
         </div>
 
         <script>
           var currentColorAttribute = 'entity_type'; // Initial color attribute
-      
+            
+          function setLayoutBy(attribute) {
+            currentLayoutAttribute = attribute;
+
+            if (currentLayoutAttribute === 'random') {
+              cy.layout({ name: 'random' }).run();
+            } else if (currentLayoutAttribute === 'grid') {
+              cy.layout({ name: 'grid' }).run();
+            } else if (currentLayoutAttribute === 'circle') {
+              cy.layout({ name: 'circle' }).run();
+            } else if (currentLayoutAttribute === 'concentric') {
+              cy.layout({ name: 'concentric' }).run();
+            } else if (currentLayoutAttribute === 'breadthfirst') {
+              cy.layout({ name: 'breadthfirst' }).run();
+            } else if (currentLayoutAttribute === 'cose') {
+              cy.layout({ name: 'cose' }).run();
+            }
+          }
+
           function setColorBy(attribute) {
             // Update current color attribute
             currentColorAttribute = attribute;
@@ -81,76 +125,73 @@
             updateNodeColors();
             updateLegend();
           }
-      
+          var list_entity_type = ["Entidad gubernamental", "Entidad gubernamental de salud", "Entidad internacional que lidera agendas en el sector", "Entidad no gubernamental", "Entidad no gubernamental de salud"];
+          var colors_entity_type = ["red", "blue", "green", "magenta", "orange"];
+
+          var list_sector_type = ["Pública", "Privada"];
+          var colors_sector_type = ["yellow", "brown"];
+
+          var list_org_type = ["Presidencia", "Ministerio", "Comisión/Comité/Instancia", "Sistema de vigilancia o monitoreo/Sistema de información", "Instituto/Centro de investigación", "Grupo de investigación", "Red", "Observatorio", "Gobernación", "Secretaría", "Laboratorio", "Alcaldía", "Entidad de control", "Departamento Administrativo", "Asociación científica/gremial/sindical", "Academia", "Empresas e Instituciones Prestadoras de Servicios de Salud", "Fundación/ONG", "Empresa/Sector productivo", "Organismo internacional", "Institución castrense"];
+          var colors_org_type = ["#FF0000", "#800000", "#FFFF00", "#808000", "#00FF00", "#008000", "#00FFFF", "#008080", "#0000FF", "#000080", "#FF00FF", "#800080", "#FFA500", "#A52A2A", "#808080", "#000000", "#ADD8E6", "#90EE90", "#FFB6C1", "#FFD700", "#D3D3D3"];
+          
+          var list_scale = ["Nacional", "Departamental", "Municipal", "Regional", "Internacional con incidencia local", "Internacional con impacto nacional"];
+          var colors_scale = ["#00FFFF", "#008080", "#0000FF", "#000080", "#FF00FF", "#FFA500"];
+        
+          var list_rel_health_sys = ["Nivel 1", "Nivel 2", "Nivel 3"];
+          var colors_rel_health_sys = ["green", "magenta", "orange"];
+        
+          var list_gen_user_type = ["Potencial usuario de la información", "Potencial interesado en el diseño y promoción de las herramientas", "Potencial usuario de las herramientas", "Sin determinar"];
+          var colors_gen_user_type = ["#FF0000", "#800000", "#FFFF00", "#808000"];
+
+          var list_act_user_type = ["Usuario consumidor", "No usuario", "Usuario legitimador"];
+          var colors_act_user_type = ["green", "magenta", "orange"];
+
+          var list_rel_sivigila = ["NACIÓN", "NACIONAL", "UND", "UNM", "UPGD-UI", "INTERNACIONAL"];
+          var colors_rel_sivigila = ["#FF0000", "#800000", "#FFFF00", "#808000", "#00FF00", "#008000"];
+
+          var list_rel_etvs = ["ETVs", "Dengue", "Zika", "Zika| Chikungunya"];
+          var colors_rel_etvs = ["#FF0000", "#800000", "#FFFF00", "#808000"];
           function updateNodeColors() {
             // Reset node colors to gray
             cy.nodes().style('background-color', 'gray');
       
             // Set node colors based on the current color attribute
             if (currentColorAttribute === 'entity_type') {
-              cy.nodes('[entity_type="Entidad gubernamental"]').style('background-color', 'red');
-              cy.nodes('[entity_type="Entidad gubernamental de salud"]').style('background-color', 'blue');
-              cy.nodes('[entity_type="Entidad internacional que lidera agendas en el sector"]').style('background-color', 'green');
-              cy.nodes('[entity_type="Entidad no gubernamental"]').style('background-color', 'magenta');
-              cy.nodes('[entity_type="Entidad no gubernamental de salud"]').style('background-color', 'orange');
+                for (var i = 0; i < list_entity_type.length; i++) {
+                    cy.nodes('[entity_type="' + list_entity_type[i] + '"]').style('background-color', colors_entity_type[i]);
+                }
             } else if (currentColorAttribute === 'sector_type') {
-              cy.nodes('[sector_type="Pública"]').style('background-color', 'yellow');
-              cy.nodes('[sector_type="Privada"]').style('background-color', 'brown');
+                for (var i = 0; i < list_sector_type.length; i++) {
+                    cy.nodes('[sector_type="' + list_sector_type[i] + '"]').style('background-color', colors_sector_type[i]);
+                }
             } else if (currentColorAttribute === 'org_type') {
-              cy.nodes('[org_type="Presidencia"]').style('background-color', '#FF0000');
-              cy.nodes('[org_type="Ministerio"]').style('background-color', '#800000');
-              cy.nodes('[org_type="Comisión/Comité/Instancia"]').style('background-color', '#FFFF00');
-              cy.nodes('[org_type="Sistema de vigilancia o monitoreo/Sistema de información"]').style('background-color', '#808000');
-              cy.nodes('[org_type="Instituto/Centro de investigación"]').style('background-color', '#00FF00');
-              cy.nodes('[org_type="Grupo de investigación"]').style('background-color', '#008000');
-              cy.nodes('[org_type="Red"]').style('background-color', '#00FFFF');
-              cy.nodes('[org_type="Observatorio"]').style('background-color', '#008080');
-              cy.nodes('[org_type="Gobernación"]').style('background-color', '#0000FF');
-              cy.nodes('[org_type="Secretaría"]').style('background-color', '#000080');
-              cy.nodes('[org_type="Laboratorio"]').style('background-color', '#FF00FF');
-              cy.nodes('[org_type="Alcaldía"]').style('background-color', '#800080');
-              cy.nodes('[org_type="Entidad de control"]').style('background-color', '#FFA500');
-              cy.nodes('[org_type="Departamento Administrativo"]').style('background-color', '#A52A2A');
-              cy.nodes('[org_type="Asociación científica/gremial/sindical"]').style('background-color', '#808080');
-              cy.nodes('[org_type="Academia"]').style('background-color', '#000000');
-              cy.nodes('[org_type="Empresas e Instituciones Prestadoras de Servicios de Salud"]').style('background-color', '#ADD8E6');
-              cy.nodes('[org_type="Fundación/ONG"]').style('background-color', '#90EE90');
-              cy.nodes('[org_type="Empresa/Sector productivo"]').style('background-color', '#FFB6C1');
-              cy.nodes('[org_type="Organismo internacional"]').style('background-color', '#FFD700');
-              cy.nodes('[org_type="Institución castrense"]').style('background-color', '#D3D3D3');
+                for (var i = 0; i < list_org_type.length; i++) {
+                    cy.nodes('[org_type="' + list_org_type[i] + '"]').style('background-color', colors_org_type[i]);
+                }
             } else if (currentColorAttribute === 'scale') {
-              cy.nodes('[scale="Nacional"]').style('background-color', '#00FFFF');
-              cy.nodes('[scale="Departamental"]').style('background-color', '#008080');
-              cy.nodes('[scale="Municipal"]').style('background-color', '#0000FF');
-              cy.nodes('[scale="Regional"]').style('background-color', '#000080');
-              cy.nodes('[scale="Internacional con incidencia local"]').style('background-color', '#FF00FF');
-              cy.nodes('[scale="Internacional con incidencia local "]').style('background-color', '#FF00FF');
-              cy.nodes('[scale="Internacional con impacto nacional"]').style('background-color', '#FFA500');
+                for (var i = 0; i < list_scale.length; i++) {
+                    cy.nodes('[scale="' + list_scale[i] + '"]').style('background-color', colors_scale[i]);
+                }
             } else if (currentColorAttribute === 'rel_health_sys') {
-              cy.nodes('[rel_health_sys="Nivel 1"]').style('background-color', 'green');
-              cy.nodes('[rel_health_sys="Nivel 2"]').style('background-color', 'magenta');
-              cy.nodes('[rel_health_sys="Nivel 3"]').style('background-color', 'orange');
+                for (var i = 0; i < list_rel_health_sys.length; i++) {
+                    cy.nodes('[rel_health_sys="' + list_rel_health_sys[i] + '"]').style('background-color', colors_rel_health_sys[i]);
+                }
             } else if (currentColorAttribute === 'gen_user_type') {
-              cy.nodes('[gen_user_type="Potencial usuario de la información"]').style('background-color', '#FF0000');
-              cy.nodes('[gen_user_type="Potencial interesado en el diseño y promoción de las herramientas"]').style('background-color', '#800000');
-              cy.nodes('[gen_user_type="Potencial usuario de las herramientas"]').style('background-color', '#FFFF00');
-              cy.nodes('[gen_user_type="Sin determinar"]').style('background-color', '#808000');
+                for (var i = 0; i < list_gen_user_type.length; i++) {
+                    cy.nodes('[gen_user_type="' + list_gen_user_type[i] + '"]').style('background-color', colors_gen_user_type[i]);
+                }
             } else if (currentColorAttribute === 'act_user_type') {
-              cy.nodes('[act_user_type="Usuario consumidor"]').style('background-color', 'green');
-              cy.nodes('[act_user_type="No usuario"]').style('background-color', 'magenta');
-              cy.nodes('[act_user_type="Usuario legitimador"]').style('background-color', 'orange');
+                for (var i = 0; i < list_act_user_type.length; i++) {
+                    cy.nodes('[act_user_type="' + list_act_user_type[i] + '"]').style('background-color', colors_act_user_type[i]);
+                }
             } else if (currentColorAttribute === 'rel_sivigila') {
-              cy.nodes('[rel_sivigila="NACIÓN"]').style('background-color', '#FF0000');
-              cy.nodes('[rel_sivigila="NACIONAL"]').style('background-color', '#800000');
-              cy.nodes('[rel_sivigila="UND"]').style('background-color', '#FFFF00');
-              cy.nodes('[rel_sivigila="UNM"]').style('background-color', '#808000');
-              cy.nodes('[rel_sivigila="UPGD-UI"]').style('background-color', '#00FF00');
-              cy.nodes('[rel_sivigila="INTERNACIONAL"]').style('background-color', '#008000');
+                for (var i = 0; i < list_rel_sivigila.length; i++) {
+                    cy.nodes('[rel_sivigila="' + list_rel_sivigila[i] + '"]').style('background-color', colors_rel_sivigila[i]);
+                }
             } else if (currentColorAttribute === 'rel_etvs') {
-              cy.nodes('[rel_etvs="ETVs"]').style('background-color', '#FF0000');
-              cy.nodes('[rel_etvs="Dengue"]').style('background-color', '#800000');
-              cy.nodes('[rel_etvs="Zika"]').style('background-color', '#FFFF00');
-              cy.nodes('[rel_etvs="Zika| Chikungunya"]').style('background-color', '#808000');
+                for (var i = 0; i < list_rel_etvs.length; i++) {
+                    cy.nodes('[rel_etvs="' + list_rel_etvs[i] + '"]').style('background-color', colors_rel_etvs[i]);
+                }
             }
             // Add more conditions if needed for other attributes
           }
@@ -160,26 +201,59 @@
 
             // Update legend based on the current color attribute
             if (currentColorAttribute === 'entity_type') {
-              legendContent += '<h4>Entity Type Legend</h4>';
-              legendContent += '<div style="color: red;">Entidad gubernamental</div>';
-              legendContent += '<div style="color: blue;">Entidad gubernamental de salud</div>';
-              legendContent += '<div style="color: green;">Entidad internacional que lidera agendas en el sector</div>';
-              legendContent += '<div style="color: magenta;">Entidad no gubernamental</div>';
-              legendContent += '<div style="color: orange;">Entidad no gubernamental de salud</div>';
+                legendContent += '<h4>Entity Type Legend</h4>';
+                for (var i = 0; i < list_entity_type.length; i++) {
+                    legendContent += '<div style="color: ' + colors_entity_type[i] + ';">' + list_entity_type[i] + '</div>';
+                }
             } else if (currentColorAttribute === 'sector_type') {
-              // Update legend for "sector_type"
-              // (additional logic for other color attribute)
+                legendContent += '<h4>Sector Type Legend</h4>';
+                for (var i = 0; i < list_sector_type.length; i++) {
+                    legendContent += '<div style="color: ' + colors_sector_type[i] + ';">' + list_sector_type[i] + '</div>';
+                }
+            } else if (currentColorAttribute == 'org_type') {
+                legendContent += '<h4>Organization Type Legend</h4>';
+                for (var i = 0; i < list_org_type.length; i++) {
+                    legendContent += '<div style="color: ' + colors_org_type[i] + ';">' + list_org_type[i] + '</div>';
+                }
+            } else if (currentColorAttribute == 'scale') {
+                legendContent += '<h4>Scale Legend</h4>';
+                for (var i = 0; i < list_scale.length; i++) {
+                    legendContent += '<div style="color: ' + colors_scale[i] + ';">' + list_scale[i] + '</div>';
+                }
+            } else if (currentColorAttribute == 'rel_health_sys') {
+                legendContent += '<h4>Health System Relationship Legend</h4>';
+                for (var i = 0; i < list_rel_health_sys.length; i++) {
+                    legendContent += '<div style="color: ' + colors_rel_health_sys[i] + ';">' + list_rel_health_sys[i] + '</div>';
+                }
+            } else if (currentColorAttribute == 'gen_user_type') {
+                legendContent += '<h4>User Type (General) Legend</h4>';
+                for (var i = 0; i < list_gen_user_type.length; i++) {
+                    legendContent += '<div style="color: ' + colors_gen_user_type[i] + ';">' + list_gen_user_type[i] + '</div>';
+                }
+            } else if (currentColorAttribute == 'act_user_type'){
+                legendContent += '<h4>User Type (Active) Legend</h4>'
+                for (var i = 0; i < list_act_user_type.length; i++) {
+                    legendContent += '<div style="color: ' + colors_act_user_type[i] + ';">' + list_act_user_type[i] + '</div>';
+                }
+            } else if (currentColorAttribute == 'rel_sivigila') {
+                legendContent += '<h4>Relationaship with SIVIGILA Legend</h4>';
+                for (var i = 0; i < list_rel_sivigila.length; i++) {
+                    legendContent += '<div style="color: ' + colors_rel_sivigila[i] + ';">' + list_rel_sivigila[i] + '</div>';
+                }
+            } else if (currentColorAttribute == 'rel_etvs') {
+                legendContent += '<h4>Relationaship with ETVs Legend</h4>';
+                for (var i = 0; i < list_rel_etvs.length; i++) {
+                    legendContent += '<div style="color: ' + colors_rel_etvs[i] + ';">' + list_rel_etvs[i] + '</div>';
+                }
             }
-            // Add more conditions if needed for other attributes
-
+        
             // Update legend content
             document.getElementById('legend').innerHTML = legendContent;
           }
-      
+
           var cy = cytoscape({
               container: document.getElementById('cy'),
-              elements: [
-    {
+              elements: [{
         "data": {
             "id": 0,
             "name": "Presidencia de la Rep\u00fablica de Colombia",
@@ -7865,22 +7939,7 @@
             "source": 241,
             "target": 244
         }
-    }
-],
-style: [
-                {
-                  selector: 'node',
-                  style: {
-                    shape: 'circle',
-                    'background-color': 'gray',
-                    'content': 'data(name)',
-                    'text-opacity': 0,
-                    'border-width': 1,
-                    'border-color': 'black'
-                  }
-                },
-                // ... (other style rules)
-              ],
+    }],
               layout: {
                 name: 'grid'
               }
@@ -7895,11 +7954,19 @@ style: [
             cy.on('select', 'node', function (event) {
               var selectedNode = event.target;
               selectedNode.style('text-opacity', 1);
+              descriptionContent = "";
+              descriptionContent += "<h4>" + selectedNode.data('name') + "</h4>";
+              descriptionContent += "<p>" + selectedNode.data('description') + "</p>";
+              document.getElementById('description').innerHTML = descriptionContent;
             });
 
             cy.on('unselect', 'node', function (event) {
               var unselectedNode = event.target;
               unselectedNode.style('text-opacity', 0);
+              descriptionContent = "";
+              descriptionContent += "<h4>Node Description</h4>";
+              descriptionContent += "<p>Select a node to see it's description</p>";
+              document.getElementById('description').innerHTML = descriptionContent;
             });
 
                       cy.on('select', 'node', function (event) {
@@ -7912,5 +7979,7 @@ style: [
                         unselectedNode.style('text-opacity', 0);
                       });
         </script>
+
+
   </body>
 </html>
