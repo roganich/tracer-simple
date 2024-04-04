@@ -58,6 +58,21 @@
           </div>
 
           <div class="tooltip u-pull-left">
+            <select id="displayNodes" >
+                <option value="">Select nodes to display</option>
+                <script>
+                    var tags = ["all", "connec_nodes", "unconnec_nodes"];
+                    var labels = ["All nodes", "Nodes with edges", "Nodes without edges"]
+                    for (var i = 0; i < tags.length; i++) {
+                        document.write('<option value="' + tags[i] + '">' + labels[i] + '</option>');
+                    }
+                </script>
+                
+            </select>
+            <!-- <span class="tooltiptext">Select an option to color by</span> -->
+          </div>
+
+          <div class="tooltip u-pull-left">
             <select id="layoutOptions" onchange="setLayoutBy(this.value)">
                 <option value="">Select layout</option>
                 <script>
@@ -7955,7 +7970,7 @@
               var selectedNode = event.target;
               selectedNode.style('text-opacity', 1);
               descriptionContent = "";
-              descriptionContent += "<h4>" + selectedNode.data('name') + "</h4>";
+              descriptionContent += "<h4> <a href="+selectedNode.data('wbsite') + ">" + selectedNode.data('name') + "</a> </h4>";
               descriptionContent += "<p>" + selectedNode.data('description') + "</p>";
               document.getElementById('description').innerHTML = descriptionContent;
             });
