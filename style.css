@@ -173,3 +173,29 @@ a:hover {
 .active:after {
   content: "\2796"; /* Unicode character for "minus" sign (-) */
 }
+
+
+
+body {
+  display: table;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.row {
+  display: table-row;
+  height: 20mm; /* adjust as needed for size */
+}
+
+.row:nth-child(1) {
+  background-color: #ffffff;
+}
+
+.row:nth-child(2) {
+  background-color: #ffffff;
+}
+.row:nth-child(3) {
+  background-color: #ffffff;
+}

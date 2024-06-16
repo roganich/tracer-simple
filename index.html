@@ -22,6 +22,10 @@
     <!-- cy libs -->
     <script src="https://unpkg.com/cytoscape-cola@2.2.3/cytoscape-cola.js"></script>
     <script src="https://unpkg.com/cytoscape-popper@1.0.2/cytoscape-popper.js"></script>
+    <script src="https://unpkg.com/cytoscape-graph-analytics/dist/cytoscape-graph-analytics.min.js"></script>
+
+    <!-- plotly -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
     <!-- demo src-->
     <script src="cytoscape.min.js"></script>
@@ -7895,8 +7899,42 @@
 
 
         <div id="Analysis" class="tabcontent">
-          <h3>Analysis</h3>
+          <h2>Analysis</h2>
           <p>Analysis on our network of actors (Under construction)</p>  
+
+          <div id="row-global" class="row">
+            <h3>Global Parameters</h3>
+                <div class="column"></div>
+                <script>    
+                    var numNodes = countNodes(cy);
+                    document.write('<li>Number of nodes: ' + numNodes + '</li>');
+                    var numIsoNodes = countIsolatedNodes(cy);
+                    document.write('<li>Number of isolated nodes: ' + numIsoNodes + '</li>');
+                    var networkDensity = calculateNetworkDensity(cy);
+                    document.write('<li>Network density: ' + networkDensity + '</li>');
+                    var avgDegree = calculateAverageDegree(cy);
+                    document.write('<li>Average degree: ' + avgDegree + '</li>');
+                
+                    //var connectedComponents = calculateConnectedComponents(cy);
+                    //document.write('<li>Connected components: ' + connectedComponents + '</li>');
+                    document.write('<li>Connected components: ' + '</li>');
+                    var estradaNormIndex = calculateEstradaNormIndex(cy);
+                    document.write('<li>Estrada Normalized Index: ' + estradaNormIndex + '</li>');
+                    //var clusteringCoeff = calculateClusteringCoefficient(cy);
+                    //document.write('<li>Clustering coefficient: ' + clusteringCoeff + '</li>');
+                    document.write('<li>Clustering coefficient: ' + '</li>');
+                    var TMH = calculateTMH(cy);
+                    document.write('<li>Tendency to Make Hub: ' + TMH + '</li>');
+                </script>  
+          </div>
+          <h3>Centrality Map</h3>
+          <div id="row-centrality" class="row"> 
+            
+            <script>
+                plotCentralityMeasures(cy);
+            </script>
+          </div> 
+          
         </div>
 
   </body>

@@ -71,7 +71,6 @@ function displayListInfo() {
   }
 }
 
-
 // FUNCTION B: Update node colors based on the current color attribute
 function updateNodeColors() {
     // Reset node colors to gray
@@ -172,7 +171,7 @@ function updateLegend() {
   document.getElementById('legend').innerHTML = legendContent;
 }
 
-// FUNCTION B: Update node size based on the current size attribute
+// TODO FUNCTION B: Update node size based on the current size attribute
 function updateNodeSize() {
   // Reset node colors to gray
   cy.nodes().style('width', '20px');
@@ -215,7 +214,7 @@ function setColorBy(attribute) {
   updateLegend();
 }
 
-// FUNCTION A: Update the node size based on the selected attribute
+// TODO FUNCTION A: Update the node size based on the selected attribute
 function setSizeby(attribute) {
   // Update current color attribute
   currentSizeAttribute = attribute;
@@ -226,8 +225,122 @@ function setSizeby(attribute) {
 
 // FUNCTION A: Load the data from a JSON file
 
+// FUNCTION C: Count the number of nodes
+function countNodes(cy) {
+  var nodes = cy.nodes();
+  return nodes.length;
+}
+
+// FUNCTION C: Count the number of edges
+function countIsolatedNodes(cy) {
+  var isolatedNodes = cy.nodes().filter(function(ele) {
+    return ele.connectedEdges().length === 0;
+  });
+  return isolatedNodes.length;
+}
+
+// FUNCTION C: Calculate the network density
+function calculateNetworkDensity(cy) {
+  var nodes = cy.nodes().length;  
+  var edges = cy.edges().length;
+  return (2 * edges) / (nodes * (nodes - 1));
+}
+
+// FUNCTION C: Calculate the average degree of the network
+function calculateAverageDegree(cy) {
+  var nodes = cy.nodes();
+  var connectedNodes = nodes.filter(function(node) {
+    return node.connectedEdges().length > 0;
+  });
+  var totalDegree = 0;
+  for (var i = 0; i < connectedNodes.length; i++) {
+    totalDegree += connectedNodes[i].connectedEdges().length;
+  }
+  return totalDegree / connectedNodes.length;
+}
+
+// FUNCTION C: Find connected components
+function findConnectedComponents() {
+  
+
+}
+
+// FUNCTION C: Calculate the Estrada Normalized Index
+function calculateEstradaNormIndex(cy) {
+  var estradaIndex = 0;
+  var nodes = cy.nodes();
+  var connectedNodes = nodes.filter(function(node) {
+    return node.connectedEdges().length > 0;
+  });
+  for (var i = 0; i < connectedNodes.length; i++) {
+    var temp_connectedEdges = connectedNodes[i].connectedEdges();
+    var temp_neighbors = temp_connectedEdges.connectedNodes();
+    for (let j of temp_neighbors) {
+      if (i !== j) {
+        estradaIndex += Math.pow((1/Math.sqrt(connectedNodes[i].connectedEdges().length) - 1/Math.sqrt(j.connectedEdges().length)), 2);
+      }
+    }
+  }
+  var N = nodes.length;
+  var estradaNormIndex = estradaIndex/(N - 2*Math.pow((N-1), 1/2));
+  return estradaNormIndex;
+}
+
+// FUNCTION C: Calculate the clustering coefficient
+function calculateClusteringCoefficient(cy) {
 
 
+}
+
+// FUNCTION C: Calculate the Tendency to Make Hub
+function calculateTMH(cy) {
+  var nodes = cy.nodes();
+  var squared_sum = 0;
+  var sum = 0;
+  for (var i = 0; i < nodes.length; i++) {
+    squared_sum += Math.pow(nodes[i].connectedEdges().length, 2);
+    sum += nodes[i].connectedEdges().length;
+  }
+  var TMH = squared_sum/sum;
+  return TMH;
+}
+
+// FUNCTION C: Plot centrality measures
+function plotCentralityMeasures(cy) {
+  var nodes = cy.nodes();
+  var connectedNodes = nodes.filter(function(node) {
+    return node.connectedEdges().length > 0;
+  });
+  var degreeCentrality = [];
+  var closenessCentrality = [];
+  var betweennessCentrality = [];
+  var bc = cy.elements().betweennessCentrality();
+
+  for (var i = 0; i < connectedNodes.length; i++) {
+    degreeCentrality.push(connectedNodes[i].connectedEdges().length);
+    closenessCentrality.push(cy.$().closenessCentrality({ root: connectedNodes[i] }));
+    betweennessCentrality.push(bc.betweennessNormalized(connectedNodes[i]));
+  }
+
+  var info = {
+    x: closenessCentrality,
+    y: betweennessCentrality,
+    mode: 'markers',
+    type: 'scatter',
+    color: degreeCentrality,
+    size: 40,
+    colorscale: 'Portland',
+    width: 750,
+    height: 250,
+  }
+
+  var data = [info];
+  var layout = {
+    xaxis: {range: [Math.min(closenessCentrality), Math.max(closenessCentrality)]},
+    yaxis: {range: [0, 1]}
+  };
+  Plotly.newPlot('row-centrality', data, layout);
+}
 
 
 
