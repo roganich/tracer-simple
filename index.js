@@ -337,216 +337,111 @@ function plotCentralityMeasures(cy) {
   var data = [info];
   var layout = {
     xaxis: {range: [Math.min(closenessCentrality), Math.max(closenessCentrality)]},
-    yaxis: {range: [0, 1]}
+    
   };
   Plotly.newPlot('row-centrality', data, layout);
 }
 
+function plotOrganizationalDistribution(cy, attribute) {
+  var node = cy.nodes();
+  var edge = cy.edges();
+  current_attribute = attribute;
+  console.log(current_attribute);
+  var classes = [... new Set(node.map(function(d) { return d.data(attribute); }))];
+  var size_classes = classes.map(function(d) { return node.filter(function(e) { return e.data(attribute) === d; }).length; });
+  
+  var data_donut = [{
+      values: size_classes,
+      labels: classes,
+      type: 'pie',
+      hole: 0.4,  // This value defines the size of the hole in the donut chart
+      textinfo: 'label+percent',
+      textposition: 'outside',
+      automargin: true
+  }];
 
+  var x_names = classes;
+  var y_names = classes;
+  var z_vals = [];
 
-Promise.all([
-  loadDataFromFile('cy-style.json'),
-  loadDataFromFile('./organization.json')
-])
-  .then(function(dataArray) {
-    var h = function(tag, attrs, children){
-      var el = document.createElement(tag);
-
-      Object.keys(attrs).forEach(function(key){
-        var val = attrs[key];
-
-        el.setAttribute(key, val);
-      });
-
-      children.forEach(function(child){
-        el.appendChild(child);
-      });
-
-      return el;
-    };
-
-    var t = function(text){
-      var el = document.createTextNode(text);
-
-      return el;
-    };
-
-    var $ = document.querySelector.bind(document);
-
-    var cy = window.cy = cytoscape({
-      container: document.getElementById('cy'),
-      style: dataArray[0],
-      elements: dataArray,
-      layout: { name: 'random' }
-    });
-
-    var params = {
-      name: 'cola',
-      nodeSpacing: 5,
-      edgeLengthVal: 45,
-      animate: true,
-      randomize: false,
-      maxSimulationTime: 1500
-    };
-    var layout = makeLayout();
-
-    layout.run();
-
-    var $btnParam = h('div', {
-      'class': 'param'
-    }, []);
-
-    var $config = $('#config');
-
-    $config.appendChild( $btnParam );
-
-    var sliders = [
-      {
-        label: 'Edge length',
-        param: 'edgeLengthVal',
-        min: 1,
-        max: 200
-      },
-
-      {
-        label: 'Node spacing',
-        param: 'nodeSpacing',
-        min: 1,
-        max: 50
-      }
-    ];
-
-    var buttons = [
-      {
-        label: h('span', { 'class': 'fa fa-random' }, []),
-        layoutOpts: {
-          randomize: true,
-          flow: null
-        }
-      },
-
-      {
-        label: h('span', { 'class': 'fa fa-long-arrow-down' }, []),
-        layoutOpts: {
-          flow: { axis: 'y', minSeparation: 30 }
-        }
-      }
-    ];
-
-    sliders.forEach( makeSlider );
-
-    buttons.forEach( makeButton );
-
-    function makeLayout( opts ){
-      params.randomize = false;
-      params.edgeLength = function(e){ return params.edgeLengthVal / e.data('weight'); };
-
-      for( var i in opts ){
-        params[i] = opts[i];
-      }
-
-      return cy.layout( params );
+  for (let i = 0; i < x_names.length; i++) {
+    let row = [];
+    for (let j = 0; j < y_names.length; j++) {
+        row.push(0);
     }
+    z_vals.push(row);
+  }
 
-    function makeSlider( opts ){
-      var $input = h('input', {
-        id: 'slider-'+opts.param,
-        type: 'range',
-        min: opts.min,
-        max: opts.max,
-        step: 1,
-        value: params[ opts.param ],
-        'class': 'slider'
-      }, []);
-
-      var $param = h('div', { 'class': 'param' }, []);
-
-      var $label = h('label', { 'class': 'label label-default', for: 'slider-'+opts.param }, [ t(opts.label) ]);
-
-      $param.appendChild( $label );
-      $param.appendChild( $input );
-
-      $config.appendChild( $param );
-
-      var update = _.throttle(function(){
-        params[ opts.param ] = $input.value;
-
-        layout.stop();
-        layout = makeLayout();
-        layout.run();
-      }, 1000/30);
-
-      $input.addEventListener('input', update);
-      $input.addEventListener('change', update);
-    }
-
-    function makeButton( opts ){
-      var $button = h('button', { 'class': 'btn btn-default' }, [ opts.label ]);
-
-      $btnParam.appendChild( $button );
-
-      $button.addEventListener('click', function(){
-        layout.stop();
-
-        if( opts.fn ){ opts.fn(); }
-
-        layout = makeLayout( opts.layoutOpts );
-        layout.run();
-      });
-    }
-
-    var makeTippy = function(node, html){
-      return tippy( node.popperRef(), {
-        html: html,
-        trigger: 'manual',
-        arrow: true,
-        placement: 'bottom',
-        hideOnClick: false,
-        interactive: true
-      } ).tooltips[0];
-    };
-
-    var hideTippy = function(node){
-      var tippy = node.data('tippy');
-
-      if(tippy != null){
-        tippy.hide();
-      }
-    };
-
-    var hideAllTippies = function(){
-      cy.nodes().forEach(hideTippy);
-    };
-
-    cy.on('tap', function(e){
-      if(e.target === cy){
-        hideAllTippies();
-      }
+  for (var i = 0; i < node.length; i++) {
+    var connectedEdges = node[i].connectedEdges();
+    var temp_class = node[i].data(attribute);
+    var temp_index = classes.indexOf(temp_class);
+    connectedEdges.forEach(function(edge) {
+      var targetNode = edge.target();
+      var targetClass = targetNode.data(attribute);
+      var targetIndex = classes.indexOf(targetClass);
+      var temp_value = z_vals[temp_index][targetIndex];
+      z_vals[temp_index][targetIndex] = temp_value + 1;
     });
+  }
 
-    cy.on('tap', 'edge', function(e){
-      hideAllTippies();
-    });
+  
 
-    cy.on('zoom pan', function(e){
-      hideAllTippies();
-    });
+  var data_heatmap = [{ 
+      x: x_names,
+      y: y_names,
+      z: z_vals,
+      type: 'heatmap',
+      hoverongaps: false,
+  }]
 
-    cy.nodes().forEach(function(n){
-      
-      n.on('click', function(e){
-        tippy.show();
-        descriptionContent = n.data('description');
-        cy.nodes().not(n).forEach(hideTippy);
-      });
-    });
+  console.log(z_vals);
 
-    $('#config-toggle').addEventListener('click', function(){
-      $('body').classList.toggle('config-closed');
+  var data = [data_donut, data_heatmap];
+  
+  var layout = {
+      showlegend: true,
+      grid: {rows: 1, columns: 2, pattern: 'independent'},
+      margin: { t: 50, l: 50, r: 50, b: 50 },
+      annotations: [{
+          font: {
+              size: 20
+          },
+          showarrow: false,
+          text: 'Total',
+          x: 0.5,
+          y: 0.5
+      }]
+  };
+  
+  Plotly.newPlot('row-organization', data, layout);
+}
 
-      cy.resize();
-    });
+function plotCentralityMap(cy) {
+  var node = cy.nodes();
+  var edge = cy.edges();
+  var closenessCentrality = node.map(function(d) { return cy.$().closenessCentrality({ root: d }); });
+  var betweennessCentrality = node.map(function(d) { return cy.elements().betweennessCentrality().betweennessNormalized(d); });
+  var degreeCentrality = node.map(function(d) { return d.connectedEdges().length; });
+  var bc = cy.elements().betweennessCentrality();
+  var info = {
+    x: closenessCentrality,
+    y: betweennessCentrality,
+    mode: 'markers',
+    type: 'scatter',
+    color: degreeCentrality,
+    size: 40,
+    colorscale: 'Portland',
+    width: 750,
+    height: 250,
+  }
 
-  });
+  var data = [info];
+  var layout = {
+    xaxis: {range: [Math.min(closenessCentrality), Math.max(closenessCentrality)]},
+    
+  };
+  Plotly.newPlot('row-centrality', data, layout);
+}
 
 

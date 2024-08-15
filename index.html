@@ -39,8 +39,7 @@
           <button class="tablinks" onclick="openTab(event, 'Timeline')">Timeline</button>
           <button class="tablinks" onclick="openTab(event, 'Analysis')">Analysis</button>
         </div>
-      
-        
+
 
         <div id="Databases" class="tabcontent">
           <h3>Databases</h3>
@@ -7900,7 +7899,7 @@
 
         <div id="Analysis" class="tabcontent">
           <h2>Analysis</h2>
-          <p>Analysis on our network of actors (Under construction)</p>  
+          <p>Analysis on our network of actors (Under development)</p>  
 
           <div id="row-global" class="row">
             <h3>Global Parameters</h3>
@@ -7927,12 +7926,37 @@
                     document.write('<li>Tendency to Make Hub: ' + TMH + '</li>');
                 </script>  
           </div>
-          <h3>Centrality Map</h3>
-          <div id="row-centrality" class="row"> 
-            
+          
+          <div id="row-organization" class="row"> 
+            <h3>Organizational distribution</h3>
+            <p>This plot shows the distribution of attributes of the nodes in the network. The donut plot
+                shows just the percentages that each category represents in the network. The heatmap represents
+                the connections between the categories. Please choose a classification to see the distribution with 
+                the dropdown menu.
+            </p>
+            <label for="class">Choose a classification:</label onchange="plotOrganizationalDistribution(cy, this.value)">
+            <select name="class" id="class">
+            <option value="entity_type">By entity</option>
+            <option value="sector_type">By sector</option>
+            <option value="org_type">By organization </option>
+            <option value="scale_type">By scale</option>
+            </select>
             <script>
-                plotCentralityMeasures(cy);
+                plotOrganizationalDistribution(cy, "org_type");
             </script>
+
+          </div> 
+        
+          <div id="row-centrality" class="row"> 
+            <h3>Centrality Map</h3>
+            <p>This plot shows how the information is distributed arround the network regarding how
+                important is a node to communicate such information and how easy is to communicate with
+                that node.
+                <script>
+                    plotCentralityMap(cy);
+                </script>
+            </p>
+            
           </div> 
           
         </div>
