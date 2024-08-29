@@ -225,6 +225,47 @@ function setSizeby(attribute) {
 
 // FUNCTION A: Load the data from a JSON file
 
+
+// FUNCTION C: Create a Scale-Free Graph
+
+
+// FUNCTION C: Create a Small World Graph
+function generateSmallWorldGraph(n, k, p) {
+  // n: number of nodes
+  // k: each node is connected to k nearest neighbors in a ring
+  // p: probability of rewiring each edge
+
+  let nodes = [];
+  let edges = [];
+
+  // Create a ring lattice with n nodes where each node is connected to k nearest neighbors
+  for (let i = 0; i < n; i++) {
+      nodes.push({ data: { id: i } });
+      for (let j = 1; j <= k / 2; j++) {
+          let target = (i + j) % n;
+          edges.push({ data: { source: i, target: target } });
+      }
+  }
+
+  // Rewire edges with probability p
+  let rewiredEdges = [];
+  edges.forEach(edge => {
+      if (Math.random() < p) {
+          // Rewire the edge
+          let newTarget;
+          do {
+              newTarget = Math.floor(Math.random() * n);
+          } while (newTarget === edge.data.source || edges.some(e => e.data.source === edge.data.source && e.data.target === newTarget));
+
+          rewiredEdges.push({ data: { source: edge.data.source, target: newTarget } });
+      } else {
+          rewiredEdges.push(edge);
+      }
+  });
+
+  return { elements: { nodes, edges: rewiredEdges } };
+}
+
 // FUNCTION C: Count the number of nodes
 function countNodes(cy) {
   var nodes = cy.nodes();
@@ -288,9 +329,52 @@ function calculateEstradaNormIndex(cy) {
 
 // FUNCTION C: Calculate the clustering coefficient
 function calculateClusteringCoefficient(cy) {
+  // Ensure the argument is a Cytoscape instance
+  if (!cy || !cy.nodes) {
+      throw new Error("Invalid Cytoscape instance");
+  }
 
+  console.log(cy.edges().length)
+  const clusteringCoefficients = {};
 
-}
+  cy.nodes().forEach(node => {
+      const nodeId = node.id();
+      const neighbors = node.neighborhood().nodes(); // Get neighbors of the node
+
+      const numNeighbors = neighbors.length;
+
+      if (numNeighbors < 2) {
+          // If a node has less than 2 neighbors, clustering coefficient is 0
+        clusteringCoefficients[nodeId] = 0;
+      } else {
+        let actualEdges = 0;
+        let possibleEdges = (numNeighbors * (numNeighbors - 1)) / 2; // Number of possible edges in the neighborhood
+  
+        // Count actual edges between neighbors
+        for (let i = 0; i < numNeighbors; i++) {
+          for (let j = i + 1; j < numNeighbors; j++) {
+              const node1 = neighbors[i];
+              const node2 = neighbors[j];
+              if (cy.getElementById(node1.id()).edgesWith(cy.getElementById(node2.id())).length > 0) {
+                  actualEdges++;
+              }
+          }
+        }
+  
+        clusteringCoefficients[nodeId] = actualEdges / possibleEdges;
+      }
+  });
+  
+  var globalClusteringCoefficient = 0
+  var numNodes = cy.nodes().length
+  for (const [key, value] of Object.entries(clusteringCoefficients)) {
+    globalClusteringCoefficient = globalClusteringCoefficient + value
+  }
+  globalClusteringCoefficient  = globalClusteringCoefficient / numNodes
+  return globalClusteringCoefficient;
+};
+
+  
 
 // FUNCTION C: Calculate the Tendency to Make Hub
 function calculateTMH(cy) {
@@ -346,7 +430,7 @@ function plotOrganizationalDistribution(cy, attribute) {
   var node = cy.nodes();
   var edge = cy.edges();
   current_attribute = attribute;
-  console.log(current_attribute);
+
   var classes = [... new Set(node.map(function(d) { return d.data(attribute); }))];
   var size_classes = classes.map(function(d) { return node.filter(function(e) { return e.data(attribute) === d; }).length; });
   
@@ -395,7 +479,6 @@ function plotOrganizationalDistribution(cy, attribute) {
       hoverongaps: false,
   }]
 
-  console.log(z_vals);
 
   var data = [data_donut, data_heatmap];
   

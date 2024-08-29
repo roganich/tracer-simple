@@ -7905,26 +7905,71 @@
             <h3>Global Parameters</h3>
                 <div class="column"></div>
                 <script>    
+                    // ATTRIBUTES COMPARABLE BETWEEN OTHER COUNTRIES
                     var numNodes = countNodes(cy);
                     document.write('<li>Number of nodes: ' + numNodes + '</li>');
                     var numIsoNodes = countIsolatedNodes(cy);
                     document.write('<li>Number of isolated nodes: ' + numIsoNodes + '</li>');
-                    var networkDensity = calculateNetworkDensity(cy);
-                    document.write('<li>Network density: ' + networkDensity + '</li>');
                     var avgDegree = calculateAverageDegree(cy);
                     document.write('<li>Average degree: ' + avgDegree + '</li>');
-                
                     //var connectedComponents = calculateConnectedComponents(cy);
                     //document.write('<li>Connected components: ' + connectedComponents + '</li>');
                     document.write('<li>Connected components: ' + '</li>');
+
+                    // ATTRIBUTES COMPARABLE TO ARTIFICIAL NETWORKS
+
+                    var networkDensity = calculateNetworkDensity(cy);
+                    document.write('<li>Network density: ' + networkDensity + '</li>');
                     var estradaNormIndex = calculateEstradaNormIndex(cy);
                     document.write('<li>Estrada Normalized Index: ' + estradaNormIndex + '</li>');
-                    //var clusteringCoeff = calculateClusteringCoefficient(cy);
-                    //document.write('<li>Clustering coefficient: ' + clusteringCoeff + '</li>');
-                    document.write('<li>Clustering coefficient: ' + '</li>');
+                    var clusteringCoeff = calculateClusteringCoefficient(cy);
+                    document.write('<li>Clustering coefficient: ' + clusteringCoeff + '</li>');
+                    //document.write('<li>Clustering coefficient: ' + '</li>');
                     var TMH = calculateTMH(cy);
                     document.write('<li>Tendency to Make Hub: ' + TMH + '</li>');
                 </script>  
+                <table>
+                    <tr>
+                        <th>Attribute</th>
+                        <th>Raw Network</th>
+                        <th>Filtered Network</th>
+                        <th>Random Graph</th>
+                        <th>Scale-Free Graph</th>
+                        <th>Small World</th>
+                    </tr>
+                    <tr>
+                        <td>Network density</td>
+                        <td><script>document.write(calculateNetworkDensity(cy))</script></td>
+                        <td></td>
+                        <td></td>
+                        <td>0.00851063829787234</td>
+                        <td>0.008547008547008548</td>
+                    </tr>
+                    <tr>
+                        <td>Estrada Normalized Index</td>
+                        <td><script>document.write(calculateEstradaNormIndex(cy))</script></td>
+                        <td></td>
+                        <td></td>
+                        <td>2.000000000000015</td>
+                        <td>0.16837972168828663</td>
+                    </tr>
+                    <tr>
+                        <td>Clustering coefficient</td>
+                        <td><script>document.write(calculateClusteringCoefficient(cy))</script></td>
+                        <td></td>
+                        <td></td>
+                        <td>0.0</td>
+                        <td>0.0</td>
+                    </tr>
+                    <tr>
+                        <td>Tendency to make hub</td>
+                        <td><script>document.write(calculateTMH(cy))</script></td>
+                        <td></td>
+                        <td></td>
+                        <td>117.5</td>
+                        <td>2.523404255319149</td>
+                    </tr>
+                </table>
           </div>
           
           <div id="row-organization" class="row"> 
